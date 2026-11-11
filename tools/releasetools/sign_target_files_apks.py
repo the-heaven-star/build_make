@@ -1385,10 +1385,12 @@ def ReplaceOtaKeys(input_tf_zip: zipfile.ZipFile, output_tf_dir: str, misc_info)
   for k in keylist:
     m = re.match(r"^(.*)\.x509\.pem$", k)
     if not m:
-      raise common.ExternalError(
-          "can't parse \"%s\" from META/otakeys.txt" % (k,))
-    k = m.group(1)
-    mapped_keys.append(OPTIONS.key_map.get(k, k) + ".x509.pem")
+      base_key = k
+    else:
+      base_key = m.group(1)
+    mapped_key = OPTIONS.key_map.get(base_key, base_key) + ".x509.pem"
+    if mapped_key not in mapped_keys:
+      mapped_keys.append(mapped_key)
 
   if mapped_keys:
     print("using:\n   ", "\n   ".join(mapped_keys))
